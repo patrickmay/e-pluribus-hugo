@@ -173,7 +173,8 @@
           (push ballot ballots))
         (add-nominated-work ballot category nominated-work)))))
 
-(defconstant +1984-data-file+ "/Users/Patrick/projects/HugoVotesim/catsort.txt")
+(defconstant +1984-data-file+
+  "/Users/Patrick/projects/e-pluribus-hugo/catsort.txt")
 
 (defparameter *ballots* (file->ballots +1984-data-file+))
 
