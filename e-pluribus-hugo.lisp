@@ -13,27 +13,48 @@
 (in-package :e-pluribus-hugo)
 
 (defparameter *category-alist*
-  '(("1" . "Novel") ("2" . "Novella") ("3" . "Novelette") ("4" . "Short story")
-    ("5" . "Non-Fiction Book") ("6" . "Dramatic Presentation")
-    ("7" . "Professional Editor") ("8" . "Professional Artist")
-    ("9" . "Semiprozine") ("10" . "Fanzine") ("11" . "Fan Writer")
-    ("12" . "Fan Artist") ("13" . "John W. Campbell Award (Not a Hugo)")))
+  '((1 . "Novel") (2 . "Novella") (3 . "Novelette") (4 . "Short story")
+    (5 . "Non-Fiction Book") (6 . "Dramatic Presentation")
+    (7 . "Professional Editor") (8 . "Professional Artist")
+    (9 . "Semiprozine") (10 . "Fanzine") (11 . "Fan Writer")
+    (12 . "Fan Artist") (13 . "John W. Campbell Award (Not a Hugo)")))
 
 (defun categories ()
   (mapcar #'car *category-alist*))
 
-(defun category->description (category)
+(defun category-description (category)
   "Return the full description of the CATEGORY."
-  (cdr (assoc category *category-alist* :test 'string=)))
+  (cdr (assoc category *category-alist*)))
 
+;; Each voter has one ballot.  Each ballot has multiple categories.
+;; There is a list of nominated works or authors for each category on a
+;; ballot.
+;;
+;; An individual ballot is modeled as an association of the voter ID
+;; and a hash table with the categories as the keys.  Each value in
+;; the hash table is a list of titles or authors.  The full set of
+;; ballots is simply a list of individual ballots.
+
+(defun make-ballot (voter)
+  "Create an association list element representing a ballot."
+  (cons voter (make-hash-table)))
+
+(defun add-nomination (ballot category title)
+  "Add a nominated work (title or author) to the BALLOT.
+  No work can be listed more than once on the same ballot."
+  (let ((nominations (cdr ballot)))
+    (if (null (gethash category nominations))
+        (setf (gethash category nominations) (list title))
+        (pushnew title (gethash category nominations) :test 'string=))))
+
+;; The field names and column ranges in the sample data file.
 (defparameter *fields-alist*
   '(('voter . (0 5))
     ('category . (5 8))
-    ('title . (27 74))
-    ('author . (77 112))))
+    ('title . (27 74))))
 
 (defun parse-fields (line)
-  "Get the voter ID, category, title, and author from a ballot file line."
+  "Get the voter ID, category, and title from a ballot file LINE."
   (let ((fields (list)))
     (dolist (field *fields-alist* (nreverse fields))
       (let ((start (first (cdr field)))
@@ -51,109 +72,9 @@
   remaining to lowercase."
   (string-downcase (remove-if-not #'alphanumeric-p string)))
 
-(defclass nominated-work ()
-  ((raw-author :initarg :raw-author
-               :reader raw-author
-               :type string)
-   (raw-title :initarg :raw-title
-              :reader raw-title
-              :type string)
-   (canonical-title :initarg :canonical-title
-                    :reader canonical-title
-                    :type string))
-  (:documentation
-   "The title and author of a nominated work."))
-
-(defun make-nominated-work (author title)
-  "Construct a nominated work instance."
-  (make-instance 'nominated-work
-                 :raw-author author
-                 :raw-title title
-                 :canonical-title (canonical-string title)))
-
-(defclass category-ballot ()
-  ((category :initarg :category
-             :reader category
-             :type string)
-   (nominated-works :initarg :nominated-works
-                    :accessor nominated-works
-                    :type list
-                    :initform (list)))
-  (:documentation
-   "The list of nominated works for a category on a voter's ballot."))
-
-(defun make-category-ballot (category)
-  "Construct a category ballot instance."
-  (make-instance 'category-ballot :category category))
-
-(defclass ballot ()
-  ((voter :initarg :voter
-          :reader voter
-          :type string)
-   (ballot-categories :initarg :ballot-categories
-                      :accessor ballot-categories
-                      :type hash-table
-                      :initform (make-hash-table :test 'equal)))
-  (:documentation
-   "A voter's Hugo ballot."))
-
-(defun make-ballot (voter)
-  "Construct a ballot instance."
-  (make-instance 'ballot :voter voter))
-
-(defgeneric add-nominated-work (ballot category nominated-work)
-  (:documentation "Add a nominated work to a ballot."))
-
-(defmethod add-nominated-work ((ballot ballot) category nominated-work)
-  "Add a nominated work to a ballot."
-  (let ((category-ballot (gethash category (ballot-categories ballot)
-                                  (make-category-ballot category))))
-    (push nominated-work (nominated-works category-ballot))
-    (setf (gethash category (ballot-categories ballot)) category-ballot)))
-
-(defgeneric category-nominated-works (ballot category)
-  (:documentation "Return the list of nominated works in the CATEGORY."))
-
-(defmethod category-nominated-works ((ballot ballot) category)
-  (let ((category-ballot (gethash category (ballot-categories ballot))))
-    (unless (null category-ballot)
-      (nominated-works category-ballot))))
-
-(defun category-ballots (ballots category)
-  "Return a list of category-ballot objects for the CATEGORY."
-  (remove-if #'null (mapcar (lambda (ballot)
-                              (gethash category (ballot-categories ballot)))
-                            ballots)))
-
-(defun category-votes (ballots category)
-  "Return a list of lists with each inner list containing the title of a
-  nominated work and the number of ballots on which it appeared."
-  (let ((votes (list)))
-    (dolist (ballot (category-ballots ballots category) votes)
-      (dolist (work (nominated-works ballot))
-        (let ((vote (find-if (lambda (vote)
-                               (string= (car vote) (canonical-title work)))
-                             votes)))
-          (if (null vote)
-              (push (list (canonical-title work) 1) votes)
-              (incf (second vote))))))))
-
-(defun current-rule-results (ballots)
-  "Return the list of nominated works in each category that result from
-  applying the current rules to the BALLOTS."
-  (dolist (category (categories))
-    (let ((sorted-results (sort (category-votes ballots category)
-                                #'> :key #'second)))
-      (format t "~A~%" (category->description category))
-      (dolist (result sorted-results)
-        (when (>= (second result) (second (sixth sorted-results)))
-          (format t "~A:  ~A~%" (first result) (second result)))))))
-
 (defun find-ballot (voter ballots)
   "Find the ballot for VOTER."
-  (find-if (lambda (ballot)
-             (string= voter (voter ballot)))
-           ballots))
+  (assoc voter ballots :test 'string=))
 
 (defun file->ballots (filename)
   "Convert the raw data into ballots."
@@ -163,52 +84,72 @@
         ((eq line 'eof) ballots)
       (let* ((fields (parse-fields line))
              (voter (first fields))
-             (category (second fields))
-             (title (third fields))
-             (author (fourth fields))
-             (nominated-work (make-nominated-work author title))
+             (category (parse-integer (second fields)))
+             (title (canonical-string (third fields)))
              (ballot (find-ballot voter ballots)))
         (when (null ballot)
           (setf ballot (make-ballot voter))
           (push ballot ballots))
-        (add-nominated-work ballot category nominated-work)))))
+        (add-nomination ballot category title)))))
 
 (defconstant +1984-data-file+
   "/Users/Patrick/projects/e-pluribus-hugo/catsort.txt")
 
 (defparameter *ballots* (file->ballots +1984-data-file+))
 
+(defun category-ballots (ballots category)
+  "Return a list of lists containing the votes for works in CATEGORY
+  across all BALLOTS."
+  (let ((category-ballots (list)))
+    (dolist (ballot ballots category-ballots)
+      (let ((works (gethash category (cdr ballot))))
+        (unless (null works)
+          (push works category-ballots))))))
+
+(defun category-votes (ballots category)
+  "Return a list of lists with each inner list containing the title of a
+  nominated work and the number of ballots on which it appeared."
+  (let ((votes (list)))
+    (dolist (ballot (category-ballots ballots category) votes)
+      (dolist (work ballot)
+        (let ((vote (find-if (lambda (vote)
+                               (string= (car vote) work))
+                             votes)))
+          (if (null vote)
+              (push (list work 1) votes)
+              (incf (second vote))))))))
+
+(defun current-rule-results (ballots)
+  "Return the list of nominated works in each category that result from
+  applying the current rules to the BALLOTS."
+  (dolist (category (categories))
+    (let ((sorted-results (sort (category-votes ballots category)
+                                #'> :key #'second)))
+      (format t "~A~%" (category-description category))
+      (dolist (result sorted-results)
+        (when (>= (second result) (second (sixth sorted-results)))
+          (format t "~A:  ~A~%" (first result) (second result)))))))
+
 ;; To generate the results under the current rules, evaluate
 ;;   (current-rule-results *ballots*)
+
 
 (defun category-titles (ballots category)
   "Return a list of all unique titles (or authors) in the CATEGORY."
   (remove-duplicates
-   (reduce #'append
-           (mapcar (lambda (category-ballot)
-                     (mapcar #'canonical-title
-                             (nominated-works category-ballot)))
-                   (category-ballots ballots category)))
+   (reduce #'append (category-ballots ballots category))
    :test 'string=))
 
-(defun ballots->title-lists (ballots category)
-  "Return a list of lists containing the titles (or authors) on each
-  ballot in the CATEGORY."
-  (mapcar (lambda (category-ballot)
-            (mapcar #'canonical-title
-                    (nominated-works category-ballot)))
-          (category-ballots ballots category)))
-
-(defun score (contenders title-lists)
+(defun score (contenders category-ballots)
   "Calculate the points and ballot counts for each title or author in
   CONTENDERS."
   (let ((scores (list)))
     (dolist (title contenders scores)
       (let ((points 0)
             (ballots 0))
-        (dolist (title-list title-lists)
-          (when (find title title-list :test 'string=)
-            (incf points (/ 1 (length title-list)))
+        (dolist (ballot category-ballots)
+          (when (find title ballot :test 'string=)
+            (incf points (/ 1 (length ballot)))
             (incf ballots)))
         (push (list title points ballots) scores)))))
 
@@ -223,27 +164,24 @@
 
 (defun elimination-phase (titles scores)
   "Return a list of one or more titles or authors on the fewest ballots."
-  (let* ((titles-scores
+  (let* ((selected-scores
           (remove-if-not (lambda (score)
                            (find (first score) titles :test 'string=))
                          scores))
-         (ordered-by-ballots (sort (copy-seq titles-scores) #'< :key #'third))
+         (ordered-by-ballots
+          (sort (copy-seq selected-scores) #'< :key #'third))
          (cutoff (third (first ordered-by-ballots)))
          (eliminated (remove-if (lambda (score)
                                   (> (third score) cutoff))
-                                titles-scores)))
+                                selected-scores)))
     (mapcar #'first eliminated)))
 
-(defun eliminate (eliminated title-lists)
-  "Remove the ELIMINATED title or authors from the TITLE-LISTS."
-  (dotimes (i (length title-lists))
-    (setf (nth i title-lists)
-          (set-difference (nth i title-lists) eliminated :test 'string=)))
-  (remove-if #'null title-lists))
-
-(defmacro while (test &body body)
-  "A little syntactic sugar around DO."
-  `(do () ((not ,test)) ,@body))
+(defun eliminate (eliminated category-ballots)
+  "Remove the ELIMINATED title or authors from the CATEGORY-BALLOTS."
+  (dotimes (i (length category-ballots))
+    (setf (nth i category-ballots)
+          (set-difference (nth i category-ballots) eliminated :test 'string=)))
+  (remove-if #'null category-ballots))
 
 (defun fraction->string (fraction)
   "Reduce FRACTION and return it as a string."
@@ -269,6 +207,10 @@
               (fraction->string (second result))
               (third result)))))
 
+(defmacro while (test &body body)
+  "A little syntactic sugar around DO."
+  `(do () ((not ,test)) ,@body))
+
 (defconstant +maximum-results+ 5)
 
 (defun eph-rule-results (ballots)
@@ -278,17 +220,16 @@
   ;; TODO:  in write up, write this first then the functions
   (dolist (category (categories))
     (let ((contenders (category-titles ballots category))
-          (title-lists (ballots->title-lists ballots category)))
+          (category-ballots (category-ballots ballots category)))
       (while (> (length contenders) +maximum-results+)
-        (let* ((scores (score contenders title-lists))
+        (let* ((scores (score contenders category-ballots))
                (least-popular (selection-phase scores))
                (eliminated (elimination-phase least-popular scores)))
           (setf contenders (set-difference contenders eliminated))
-          (setf title-lists (eliminate eliminated title-lists))
+          (setf category-ballots (eliminate eliminated category-ballots))
           (unless (> (length contenders) +maximum-results+)
             (category-eph-results category
-                                  (score contenders title-lists))))))))
+                                  (score contenders category-ballots))))))))
 
 ;; To generate the results under the E Pluribus Hugo rules, evaluate
 ;;   (eph-rule-results *ballots*)
-
