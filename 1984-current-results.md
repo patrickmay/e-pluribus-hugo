@@ -1,5 +1,5 @@
-Here are the results of applying my implementation of the current Hugo ballots
-nomination rules on the 1984 data.  This is very close to those ballots
+Here are the results of applying my implementation of the current Hugo
+nomination rules on the 1984 data.  This is very close to those
 [provided by P J Evans](http://nielsenhayden.com/makinglight/archives/016283.html#4176445). ballots
 
 ### Novel
