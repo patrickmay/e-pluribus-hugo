@@ -6,7 +6,7 @@ categories slightly from those
 
 Can anyone confirm these numbers?
 
-###Novel
+### Novel
 
 * Startide Rising: 105 1/4 points, 136 ballots
 * The Robots of Dawn: 52 3/4 points, 75 ballots
@@ -14,7 +14,7 @@ Can anyone confirm these numbers?
 * Tea with the Black Dragon: 40 1/6 points, 55 ballots
 * Millennium: 33 5/6 points, 52 ballots
 
-###Novella
+### Novella
 
 * Seeking: 43 19/20 points, 80 ballots
 * Hardfought: 40 17/60 points, 62 ballots
@@ -22,7 +22,7 @@ Can anyone confirm these numbers?
 * Hurricane Claude: 27 11/30 points, 42 ballots
 * In the Face of My Enemy: 24 47/60 points, 47 ballots
 
-###Novelette
+### Novelette
 
 * Blood Music: 34 1/6 points, 46 ballots
 * The Sidon in the Mirror: 27 1/6 points, 38 ballots
@@ -30,7 +30,7 @@ Can anyone confirm these numbers?
 * The Monkey Treatment: 25 1/4 points, 36 ballots
 * Slow Birds: 19 1/2 points, 33 ballots
 
-###Short story
+### Short story
 
 * Speech Sounds: 29 1/2 points, 37 ballots
 * Wong's Lost and Found Emporium: 25 5/6 points, 32 ballots
@@ -38,7 +38,7 @@ Can anyone confirm these numbers?
 * The Peacemaker: 25 1/3 points, 31 ballots
 * Servant of the People: 22 5/6 points, 28 ballots
 
-###Non-Fiction Book
+### Non-Fiction Book
 
 * The High Kings: 29 37/60 points, 45 ballots
 * Dream Makers Volume II: 28 7/10 points, 45 ballots
@@ -46,7 +46,7 @@ Can anyone confirm these numbers?
 * Staying Alive: A Writer's Guide: 15 11/30 points, 26 ballots
 * The Encyclopedia of SFF Volume 3: 9 47/60 points, 19 ballots
 
-###Dramatic Presentation
+### Dramatic Presentation
 
 * Return of the Jedi: 145 1/3 points, 225 ballots
 * The Right Stuff: 47 1/12 points, 87 ballots
@@ -54,7 +54,7 @@ Can anyone confirm these numbers?
 * Brainstorm: 35 1/12 points, 74 ballots
 * Something Wicked This Way Comes: 20 5/6 points, 51 ballots
 
-###Professional Editor
+### Professional Editor
 
 * Edward L. Ferman: 64 7/12 points, 129 ballots
 * Shawna McCarthy: 45 5/6 points, 95 ballots
@@ -62,7 +62,7 @@ Can anyone confirm these numbers?
 * Stanley Schmidt: 43 1/6 points, 82 ballots
 * Terry Carr: 41 3/4 points, 83 ballots
 
-###Professional Artist
+### Professional Artist
 
 * Michael Whelan: 89 1/2 points, 124 ballots
 * Rowena Morrill: 40 1/2 points, 73 ballots
@@ -70,7 +70,7 @@ Can anyone confirm these numbers?
 * Barclay Shaw: 28 points, 49 ballots
 * Val Lakey Lindahn: 24 1/12 points, 31 ballots
 
-###Semiprozine
+### Semiprozine
 
 * Locus: 120 19/60 points, 185 ballots
 * Science Fiction Chronicle: 43 2/5 points, 94 ballots
@@ -78,7 +78,7 @@ Can anyone confirm these numbers?
 * Fantasy Newsletter: 21 2/5 points, 49 ballots
 * Whispers: 11 7/30 points, 23 ballots
 
-###Fanzine
+### Fanzine
 
 * File 770: 69 5/12 points, 84 ballots
 * The Philk Fee-Nom-Ee-Non: 18 1/2 points, 20 ballots
@@ -86,7 +86,7 @@ Can anyone confirm these numbers?
 * Izzard: 14 11/12 points, 22 ballots
 * Ansible: 7 1/12 points, 15 ballots
 
-###Fan Writer
+### Fan Writer
 
 * Mike Glyer: 41 5/6 points, 58 ballots
 * Richard E. Geis: 24 1/2 points, 36 ballots
@@ -94,7 +94,7 @@ Can anyone confirm these numbers?
 * Dave Langford: 18 points, 33 ballots
 * Teresa Nielsen Hayden: 13 1/6 points, 19 ballots
 
-###Fan Artist
+### Fan Artist
 
 * William Rotsler: 24 1/4 points, 37 ballots
 * Brad Foster: 21 5/12 points, 32 ballots
@@ -102,7 +102,7 @@ Can anyone confirm these numbers?
 * Alexis Gilliland: 18 3/4 points, 35 ballots
 * Joan Hhanke-Woods: 16 5/12 points, 28 ballots
 
-###John W. Campbell Award (Not a Hugo)
+### John W. Campbell Award (Not a Hugo)
 
 * R. A. Macavoy: 113 2/3 points, 124 ballots
 * Joel Rosenberg: 19 points, 19 ballots

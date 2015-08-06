@@ -199,7 +199,7 @@
 
 (defun category-eph-results (category scores)
   "Print the E Pluribus Hugo results for CATEGORY."
-  (format t "~%~A~%" (category->description category))
+  (format t "~%~A~%" (category-description category))
   (let ((ordered-results (sort (copy-seq scores) #'> :key #'second)))
     (dolist (result ordered-results)
       (format t "~A: ~A points, ~A ballots~%"
@@ -217,7 +217,6 @@
   "Return the list of nominated works in each category that result from
   applying the E Pluribus Hugo rules (SDV-LPE, selection by points,
   elimination by ballot count) to the BALLOTS."
-  ;; TODO:  in write up, write this first then the functions
   (dolist (category (categories))
     (let ((contenders (category-titles ballots category))
           (category-ballots (category-ballots ballots category)))
@@ -232,4 +231,4 @@
                                   (score contenders category-ballots))))))))
 
 ;; To generate the results under the E Pluribus Hugo rules, evaluate
-;;   (eph-rule-results *ballots*)
+;; (eph-rule-results *ballots*)
